@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request
 # from .routers import auth
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
@@ -12,6 +13,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="TodoApp/templates")
 
 app.mount("/static",StaticFiles(directory="TodoApp/static"),name="static")
+
 
 @app.get("/")
 def test(request:Request):
@@ -25,6 +27,10 @@ def render_login_page(request:Request):
 @app.get("/register-page")
 def render_login_page(request:Request):
     return templates.TemplateResponse("register.html",{"request":request})
+
+@app.get("/todo-page")
+def render_todo_page(request:Request):
+    return templates.TemplateResponse("todo.html",{"request":request})
 
 
 @app.get("/healthy")
