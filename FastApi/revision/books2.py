@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Path, Query
 from pydantic import BaseModel , Field
 
 app = FastAPI()
@@ -27,7 +27,7 @@ class BookRequest(BaseModel):
     title:str = Field(min_length=3)
     author:str = Field(min_length=1)
     description:str = Field(min_length = 1)
-    published_date:int = Field(gt=0)
+    published_date:int = Field(gt=2000,lt=2031)
     rating: int = Field(gt=0, lt=6)
     
     
@@ -56,14 +56,14 @@ BOOKS = [
 async def read_all_books():
     return BOOKS
 
-@app.get('/books/book_id')
-async def read_book(book_id:int):
+@app.get('/books/{book_id}')
+async def read_book(book_id:int = Path(gt=0)):
     for book in BOOKS:
         if book.id == book_id:
             return book
         
 @app.get('/books/')
-async def read_book_by_rating(book_rating:int):
+async def read_book_by_rating(book_rating:int = Query(gt=0, lt=6)):
     book_to_return = []
     for book in BOOKS:
         if book.rating == book_rating:
@@ -91,14 +91,14 @@ async def update_book(book:BookRequest):
             BOOKS[i] = book
 
 @app.delete('/books/{book_id}')
-async def delete_book(book_id:int):
+async def delete_book(book_id:int = Path(gt=0)):
     for i in range(len(BOOKS)):
         if BOOKS[i].id == book_id:
             BOOKS.pop(i)
             break
 
-@app.get("/books/published_date")
-async def published_date(date:int):
+@app.get("/books/published_date/")
+async def published_date(date:int = Query(gt=1999, lt=2031)):
     book_to_return = []
     for book in BOOKS:
         if book.published_date == date:
